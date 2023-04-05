@@ -1,0 +1,97 @@
+# Default values for video-analytics-demo
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nvcr.io/nvidia/deepstream
+  tag: 6.0.1-samples
+  pullPolicy: IfNotPresent
+  webui: anguda/ant-media:1.0
+
+ngcModel:
+  #NGC Model Pruned URL from NGC
+  getModel: ngc registry model download-version "nvidia/tao/trafficcamnet:pruned_v1.0.1" 
+  #NGC model name
+  name: trafficcamnet
+  # Model File Name that will use in Deepstream
+  fileName: resnet18_trafficcamnet_pruned.etlt
+  # Model Config that needs to update
+  modelConfig: config_infer_primary_trafficcamnet.txt
+  #Do not update the Put Model
+  putModel: /opt/nvidia/deepstream/deepstream-6.0/samples/configs/tao_pretrained_models/
+
+ngcConfig:
+  apikey: ""
+  ngcorg: "nvidian"
+  ngcteam: "no-team"
+
+imagePullSecrets:
+- name: nvidia-registrykey-secret
+
+nameOverride: "video-analytics"
+fullnameOverride: "video-analytics-demo"
+
+command:
+  apprunnercmd: "python"
+  apprunnername: "/opt/nvidia/deepstream/create_config.py"
+  appname: "deepstream-app"
+  apparg: "/opt/nvidia/deepstream/deepstream-6.0/samples/configs/deepstream-app/source4_1080p_dec_infer-resnet_tracker_sgie_tiled_display_int8.txt"
+
+service:
+#  type: NodePort
+  type: LoadBalancer
+  port: 80
+  webuiPort: 5080
+  webuinodePort: 31115
+  rtspnodePort: 31113
+
+#specify camera IP as rtsp://username:password@ip
+#or rtsp://ip if it has no username and password
+
+cameras:
+#  camera1: rtsp://rtspstream.com/parking
+#  camera2: rtsp://170.93.143.139/rtplive/470011e600ef003a004ee33696235daa
+#  camera1: rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4
+
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    nvidia.com/gpu: 1
+  #   cpu: 100m
+  #   memory: 128Mi
+  requests:
+    nvidia.com/gpu: 1
+  #   cpu: 100m
+  #   memory: 128Mi
+  
+#gpuType: nvidia.com/gpu
+#numGPUs: 1
+#
+deployment:
+  strategy: Recreate
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

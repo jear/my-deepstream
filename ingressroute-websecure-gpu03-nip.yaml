@@ -1,0 +1,35 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: security
+  namespace: video-analytics
+spec:
+  headers:
+    frameDeny: true
+    sslRedirect: true
+    browserXssFilter: true
+    contentTypeNosniff: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 31536000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: video-analytics
+  namespace: video-analytics
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`video-analytics.83-206-89-106.nip.io`)
+      kind: Rule
+      services:
+        - name: video-analytics-demo-webui
+          port: 80
+      middlewares:
+      - name: security
+  tls:
+    certResolver: letsencrypt
+
