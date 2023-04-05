@@ -1,5 +1,8 @@
+# Demo interencing 
+The demo counts cars and person on a looping video
+
 ```
-helm fetch https://helm.ngc.nvidia.com/nvidia/charts/video-analytics-demo-0.1.8.tgz && \
+helm fetch https://helm.ngc.nvidia.com/nvidia/charts/video-analytics-demo-0.1.8.tgz 
 
 helm install video-analytics-demo video-analytics-demo-0.1.8.tgz  -n video-analytics --create-namespace -f values.yaml
 
